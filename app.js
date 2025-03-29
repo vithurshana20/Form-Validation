@@ -1,84 +1,121 @@
-const form = document.getElementById("registerForm");
-        const username = document.getElementById("name");
-        const email = document.getElementById("email");
-        const password = document.getElementById("password");
-        const confirmPassword = document.getElementById("confirmPassword");
-        const strengthBar = document.querySelector(".strength-bar");
-        const togglePassword = document.querySelector(".toggle-password");
+const form = document.getElementById('registrationForm');
+const username = document.getElementById('username');
+const email = document.getElementById('email');
+const password = document.getElementById('password');
+const confirmPassword = document.getElementById('confirmPassword');
+const togglePassword = document.getElementById('togglePassword');
+const strengthBar = document.getElementById('strengthBar');
+const successMessage = document.getElementById('successMessage');
 
-        function showError(input, message) {
-            const small = input.nextElementSibling;
-            small.textContent = message;
-            small.style.display = "block";
+// Regex patterns
+const usernameRegex = /^[a-zA-Z0-9]{3,15}$/;
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
+
+// Event Listeners
+form.addEventListener('submit', handleSubmit);
+password.addEventListener('input', updateStrengthMeter);
+togglePassword.addEventListener('click', togglePasswordVisibility);
+
+function showError(input, message) {
+    const errorElement = document.getElementById(`${input.id}Error`);
+    errorElement.textContent = message;
+    errorElement.classList.add('show');
+    input.style.borderColor = '#dc3545';
+}
+
+function clearError(input) {
+    const errorElement = document.getElementById(`${input.id}Error`);
+    errorElement.textContent = '';
+    errorElement.classList.remove('show');
+    input.style.borderColor = '#ddd';
+}
+
+function validateForm() {
+    let isValid = true;
+    clearError(username);
+    clearError(email);
+    clearError(password);
+    clearError(confirmPassword);
+
+    if (!usernameRegex.test(username.value)) {
+        showError(username, 'Username must be 3-15 characters (letters and numbers only)');
+        isValid = false;
+    }
+
+    if (!emailRegex.test(email.value)) {
+        showError(email, 'Please enter a valid email address');
+        isValid = false;
+    }
+
+    if (!passwordRegex.test(password.value)) {
+        showError(password, 'Password must be 8+ characters with uppercase, number, and special character');
+        isValid = false;
+    }
+
+    if (password.value !== confirmPassword.value) {
+        showError(confirmPassword, 'Passwords do not match');
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+function updateStrengthMeter() {
+    const value = password.value;
+    let strength = 0;
+
+    if (value.length >= 8) strength += 20;
+    if (/[A-Z]/.test(value)) strength += 40;
+    if (/[0-9]/.test(value)) strength += 30;
+    if (/[!@#$%^&*]/.test(value)) strength += 10;
+
+    strengthBar.style.width = `${Math.min(strength, 100)}%`;
+    if (strength < 50) {
+        strengthBar.style.background = '#dc3545'; // Weak - Red
+    } else if (strength < 80) {
+        strengthBar.style.background = '#fd7e14'; // Medium - Orange
+    } else {
+        strengthBar.style.background = '#28a745'; // Strong - Green
+    }
+}
+
+function togglePasswordVisibility() {
+    const type = password.type === 'password' ? 'text' : 'password';
+    password.type = type;
+    togglePassword.textContent = type === 'password' ? 'Show' : 'Hide';
+}
+
+function handleSubmit(e) {
+    e.preventDefault();
+    
+    if (validateForm()) {
+        // Save to localStorage
+        const userData = {
+            username: username.value,
+            email: email.value
+        };
+        localStorage.setItem('userData', JSON.stringify(userData));
+        alert("Registration Successfull!");
+
+        // Show success message
+        successMessage.classList.add('show');
+        
+        
+        // Reset form
+        setTimeout(() => {
+            form.reset();
+            strengthBar.style.width = '0%';
+            successMessage.classList.remove('show');
+        }, 2000);
+    } else {
+        // Scroll to first invalid input
+        const firstInvalid = form.querySelector('.error.show');
+        if (firstInvalid) {
+            firstInvalid.parentElement.querySelector('input').scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
         }
-
-        function showSuccess(input) {
-            input.nextElementSibling.style.display = "none";
-        }
-
-        function validateEmail(email) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        }
-
-        function validatePasswordStrength(password) {
-            let strength = 0;
-            if (password.match(/[A-Z]/)) strength++;
-            if (password.match(/[0-9]/)) strength++;
-            if (password.match(/[!@#$%^&*]/)) strength++;
-            if (password.length >= 8) strength++;
-            return strength;
-        }
-
-        password.addEventListener("input", () => {
-            const strength = validatePasswordStrength(password.value);
-            strengthBar.className = "strength-bar";
-            if (strength === 1) strengthBar.classList.add("weak");
-            if (strength === 2) strengthBar.classList.add("medium");
-            if (strength >= 3) strengthBar.classList.add("strong");
-        });
-
-        togglePassword.addEventListener("click", () => {
-            if (password.type === "password") {
-                password.type = "text";
-                togglePassword.textContent = "Hide";
-            } else {
-                password.type = "password";
-                togglePassword.textContent = "Show";
-            }
-        });
-
-        form.addEventListener("submit", (e) => {
-            e.preventDefault();
-            let valid = true;
-            if (!/^[a-zA-Z0-9]{3,15}$/.test(username.value)) {
-                showError(username, "Invalid username");
-                valid = false;
-            } else {
-                showSuccess(username);
-            }
-            if (!validateEmail(email.value)) {
-                showError(email, "Invalid email");
-                valid = false;
-            } else {
-                showSuccess(email);
-            }
-            if (validatePasswordStrength(password.value) < 3) {
-                showError(password, "Weak password");
-                valid = false;
-            } else {
-                showSuccess(password);
-            }
-            if (password.value !== confirmPassword.value) {
-                showError(confirmPassword, "Passwords do not match");
-                valid = false;
-            } else {
-                showSuccess(confirmPassword);
-            }
-            if (valid) {
-                localStorage.setItem("username", username.value);
-                localStorage.setItem("email", email.value);
-                document.getElementById("successMessage").textContent = "Registration successful!";
-                form.reset();
-                strengthBar.className = "strength-bar";
-            }
-        });
+    }
+}
