@@ -7,12 +7,12 @@ const togglePassword = document.getElementById('togglePassword');
 const strengthBar = document.getElementById('strengthBar');
 const successMessage = document.getElementById('successMessage');
 
-// Regex patterns
+
 const usernameRegex = /^[a-zA-Z0-9]{3,15}$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
 
-// Event Listeners
+
 form.addEventListener('submit', handleSubmit);
 password.addEventListener('input', updateStrengthMeter);
 togglePassword.addEventListener('click', togglePasswordVisibility);
@@ -72,11 +72,11 @@ function updateStrengthMeter() {
 
     strengthBar.style.width = `${Math.min(strength, 100)}%`;
     if (strength < 50) {
-        strengthBar.style.background = '#dc3545'; // Weak - Red
+        strengthBar.style.background = '#dc3545'; 
     } else if (strength < 80) {
-        strengthBar.style.background = '#fd7e14'; // Medium - Orange
+        strengthBar.style.background = '#fd7e14'; 
     } else {
-        strengthBar.style.background = '#28a745'; // Strong - Green
+        strengthBar.style.background = '#28a745'; 
     }
 }
 
@@ -90,7 +90,7 @@ function handleSubmit(e) {
     e.preventDefault();
     
     if (validateForm()) {
-        // Save to localStorage
+        
         const userData = {
             username: username.value,
             email: email.value
@@ -98,18 +98,17 @@ function handleSubmit(e) {
         localStorage.setItem('userData', JSON.stringify(userData));
         alert("Registration Successfull!");
 
-        // Show success message
+       
         successMessage.classList.add('show');
         
         
-        // Reset form
+      
         setTimeout(() => {
             form.reset();
             strengthBar.style.width = '0%';
             successMessage.classList.remove('show');
         }, 2000);
     } else {
-        // Scroll to first invalid input
         const firstInvalid = form.querySelector('.error.show');
         if (firstInvalid) {
             firstInvalid.parentElement.querySelector('input').scrollIntoView({
