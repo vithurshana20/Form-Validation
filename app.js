@@ -95,13 +95,7 @@ function handleSubmit(e) {
             username: username.value,
             email: email.value
         };
-        localStorage.setItem('userData', JSON.stringify(userData));
-        alert("Registration Successfull!");
-
-       
-        successMessage.classList.add('show');
-        
-        
+        localStorage.setItem('userData', JSON.stringify(userData)); 
       
         setTimeout(() => {
             form.reset();
