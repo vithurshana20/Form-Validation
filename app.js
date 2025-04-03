@@ -41,23 +41,16 @@ function validateForm() {
     if (!usernameRegex.test(username.value)) {
         showError(username, 'Username must be 3-15 characters');
         isValid = false;
-    }
-
-    if (!emailRegex.test(email.value)) {
+    }  if (!emailRegex.test(email.value)) {
         showError(email, 'Please enter a valid email address');
         isValid = false;
-    }
-
-    if (!passwordRegex.test(password.value)) {
+    } if (!passwordRegex.test(password.value)) {
         showError(password, 'Password must be 8+ characters with uppercase, number, and special character');
         isValid = false;
-    }
-
-    if (password.value !== confirmPassword.value) {
+    } if (password.value !== confirmPassword.value) {
         showError(confirmPassword, 'Passwords do not match');
         isValid = false;
     }
-
     return isValid;
 }
 
