@@ -39,7 +39,7 @@ function validateForm() {
     clearError(confirmPassword);
 
     if (!usernameRegex.test(username.value)) {
-        showError(username, 'Username must be 3-15 characters (letters and numbers only)');
+        showError(username, 'Username must be 3-15 characters');
         isValid = false;
     }
 
